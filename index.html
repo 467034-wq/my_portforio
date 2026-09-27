@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>My Portfolio</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background: #1a1a2e;
       display: flex;
@@ -11,9 +12,14 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      margin: 0;
       font-family: sans-serif;
       color: white;
+      padding: 20px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      color: #e94560;
     }
     img {
       max-width: 850px;
@@ -40,14 +46,32 @@
     button:disabled { background: #555; cursor: default; }
     #pageNum {
       font-size: 18px;
-      min-width: 80px;
+      min-width: 100px;
       text-align: center;
     }
+    .dots {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #555;
+      cursor: pointer;
+    }
+    .dot.active { background: #e94560; }
   </style>
 </head>
 <body>
-  <h2>📁 Portfolio</h2>
-  <img id="slide" src="images/page1.png" alt="Portfolio Page">
+
+  <h2>📁 Portfolio ของฉัน</h2>
+
+  <div class="dots" id="dots"></div>
+
+  <img id="slide" src="images/1.png" alt="Portfolio Page">
+
   <div class="controls">
     <button id="prev" onclick="changePage(-1)" disabled>◀ ก่อนหน้า</button>
     <span id="pageNum">1 / 13</span>
@@ -58,13 +82,36 @@
     let current = 1;
     const total = 13;
 
-    function changePage(dir) {
-      current += dir;
-      document.getElementById('slide').src = 'images/page' + current + '.png';
+    // สร้าง dots
+    const dotsContainer = document.getElementById('dots');
+    for (let i = 1; i <= total; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 1 ? ' active' : '');
+      dot.onclick = () => goToPage(i);
+      dotsContainer.appendChild(dot);
+    }
+
+    function goToPage(n) {
+      current = n;
+      document.getElementById('slide').src = 'images/' + current + '.png';
       document.getElementById('pageNum').textContent = current + ' / ' + total;
       document.getElementById('prev').disabled = current === 1;
       document.getElementById('next').disabled = current === total;
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i + 1 === current);
+      });
     }
+
+    function changePage(dir) {
+      goToPage(current + dir);
+    }
+
+    // กด keyboard ซ้าย/ขวาได้
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' && current < total) changePage(1);
+      if (e.key === 'ArrowLeft' && current > 1) changePage(-1);
+    });
   </script>
+
 </body>
 </html>
